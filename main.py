@@ -2,28 +2,27 @@ import os
 import shutil
 import inquirer
 
-
 # Determine the users home path
 user_dir = os.path.expanduser('~')
-available_directories = [dI for dI in os.listdir(user_dir) if dI[0] != '.' if os.path.isdir(os.path.join(user_dir,dI))]
-
+available_directories = [dI for dI in os.listdir(user_dir) if dI[0] != '.' if os.path.isdir(os.path.join(user_dir, dI))]
+available_directories.sort()
 
 # Prompt for the desired source directory
 dirs = [
-  inquirer.List('dir',
-                message="Which directory would you like to move PDF files from?",
-                choices=available_directories,
-            ),
+    inquirer.List('dir',
+                  message="Which directory would you like to move PDF files from?",
+                  choices=available_directories,
+                  ),
 ]
 answers = inquirer.prompt(dirs)
 selected_dir = user_dir + '/' + answers["dir"]
 
 # Prompt for the desired destination directory
 dirs = [
-  inquirer.List('dir',
-                message="Which directory would you like to move PDF files to?",
-                choices=available_directories,
-            ),
+    inquirer.List('dir',
+                  message="Which directory would you like to move PDF files to?",
+                  choices=available_directories,
+                  ),
 ]
 answers = inquirer.prompt(dirs)
 destination_dir = user_dir + '/' + answers["dir"]
@@ -34,3 +33,11 @@ for filename in os.listdir(selected_dir):
         source = os.path.join(selected_dir, filename)
         destination = os.path.join(destination_dir, filename)
         dest = shutil.move(source, destination)
+
+# List successfully moved files
+included_extensions = ['pdf']
+file_names = [fn for fn in os.listdir(destination_dir)
+              if any(fn.endswith(ext) for ext in included_extensions)]
+
+print('File transfer successful:')
+print(file_names)
